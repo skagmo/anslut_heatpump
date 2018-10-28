@@ -2,7 +2,7 @@ This repository dives into the communication protocol used in Anslut air to wate
 
 In short, you need a hardware interface and a piece of software to be able to control it through e.g. Home Assistant with a user interface like this:
 
-![Home assistant UI](https://raw.githubusercontent.com/skagmo/anslut_heatpump/master/img/anslut_hass.png?raw=true)
+![Home assistant UI](https://raw.githubusercontent.com/skagmo/anslut_heatpump/master/img/anslut-hass.png?raw=true)
 
 # Main protocol
 
