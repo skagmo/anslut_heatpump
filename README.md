@@ -2,7 +2,7 @@ This repository dives into the communication protocol used in Anslut air to wate
 
 In short, you need a hardware interface and a piece of software to be able to control it through e.g. Home Assistant with a user interface like this:
 
-![Home assistant UI](https://github.com/skagmo/anslut-proto/blob/master/img/anslut_hass.png?raw=true)
+![Home assistant UI](https://raw.githubusercontent.com/skagmo/anslut_heatpump/master/img/anslut_hass.png?raw=true)
 
 # Main protocol
 
@@ -12,7 +12,7 @@ A python class is defined in ```anslut_proto.py```. Run ```anslut_gw.py``` in th
 
 The physical interface is an isolated open collector UART with high voltage levels (12 V), 100 baud, odd parity, MSB first bit order (LSB first is normal). This interface will allow you to communicate with a 3.3 V / 5 V UART.
 
-![Interface schematic](https://github.com/skagmo/anslut-proto/blob/master/img/schematic.png?raw=true)
+![Interface schematic](https://raw.githubusercontent.com/skagmo/anslut_heatpump/master/img/schematic.png?raw=true)
 
 ## Packet to main PCB
 
@@ -56,7 +56,7 @@ I didin't dive as much into this protocol as it doesn't give the same low level 
 
 The newer Jula 416120 heat pump has three main components that are connected together. Two PCBs and an "advanced" control panel. Earlier versions of this pump (Jula articles 416086 and 416107) only had one PCB in the indoor unit and a more simple control panel.
 
-![PCBs](https://github.com/skagmo/anslut-proto/blob/master/img/pcbs-text.jpg?raw=true)
+![PCBs](https://raw.githubusercontent.com/skagmo/anslut_heatpump/master/img/pcbs-text.jpg?raw=true)
 
 ## Main PCB
 
