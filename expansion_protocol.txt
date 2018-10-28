@@ -1,0 +1,20 @@
+### Message 0x9c, from panel
+
+Example: 9c 00 80 02 22 07 23 00 6a
+
+Byte 2 is mode. 0x00=off 0x80=heat, 81=cool 82=warm water 83=warm water + heat 84=warm water + cool 85=warm water + heat + cool 86=vacation 87=custom, 0xc0=force stop or similar, only sent in one single packet
+Byte 4 is setpoint temperature
+
+### Message 0xB9, from controller
+
+Example: b9:01:00:21:00:00:00:00:00:00:20:fd
+
+3 is actual temperature
+9 is power
+10 is setpoint, reported back
+
+### Message 0xae, from controller, parameter message
+
+Example: ae:05:02:02:00:07:02:4b:00:1b:14:0e:0f:05:08:01:3c:73:78:8c
+
+Parameter 0-17 as listed in the manual.
