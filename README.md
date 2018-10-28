@@ -18,10 +18,6 @@ The physical interface is an isolated open collector UART with high voltage leve
 
 Sent typically once every second.
 
-| File/folder       | Description |
-|:-----------       |:----------- |
-| documentation/    | More documentation. |
-
 | Index | Description |
 |:---   |:---         |
 | 0 | Start byte, fixed at 0x39 (0x9c if not flipped LSB to MSB) |
