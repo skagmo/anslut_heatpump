@@ -17,6 +17,9 @@ OPMODE_HEAT = 0x20
 OPMODE_HEAT_WATER = 0x24
 OPMODE_AND_EN_REV = {'off': 0x20, 'cool': 0x11, 'heat': 0x21, 'heat_water': 0x25}
 SEND_INTERVAL = 2
+# Room temperature needs to be set more often than every 10 minutes
+# If not, water temperature will be used
+TEMP_TIMEOUT = 600 
 
 # Used in response
 PUMP_STATES = {0x00: 'idle', 0x01: 'active', 0x03: 'defrost'}
@@ -35,8 +38,8 @@ class anslut:
 		self.req_opmode_and_en = OPMODE_HEAT|ENABLED_bm
 		self.req_roomtemp = 25
 		self.req_setpoint = 31
-		self.watertemp_as_roomtemp = True
-
+		self.watertemp = 25
+		self.roomtemp_timestamp = 0
 		self.open_serial()
 
 	def open_serial(self):
@@ -49,22 +52,6 @@ class anslut:
 		
 	def set_callback(self, function):
 		self.callback = function
-
-	# Text command
-	def parse_cmd(self, s):
-		try:
-			[cmd, value] = s.split('=')
-			if (cmd == "opmode"):
-				if (value in MODE_STRINGS.values()):
-					self.set_opmode(value)
-			elif (cmd == "roomtemp"):
-				self.set_roomtemp(int(value))
-			elif (cmd == "setpoint"):
-				self.set_setpoint(int(value))
-			elif (cmd == "watertemp_target"):
-				self.use_watertemp_as_roomtemp(int(value))
-		except ValueError:
-			print "Wrong number of arguments"
 
 	def checksum(self, d):
 		# Calculate checksum
@@ -110,8 +97,8 @@ class anslut:
 		# Value 85 is maximum power, scale to percent
 		power = int(round(pkt[3]*100.0/85.0))
 
-		if (self.watertemp_as_roomtemp):
-			self.set_roomtemp(pkt[2])
+		# Store watertemp for sending back as roomtemp in case of timeout
+		self.watertemp = pkt[2]
 
 		self.callback("state=%s watertemp=%u power=%u unknown=%02x\n" %
 			(pump_state, pkt[2], power, pkt[4]))
@@ -131,8 +118,14 @@ class anslut:
 				print("Failed")
 
 		# Send request packet regularly
-		if (time.time() - self.send_ts) > SEND_INTERVAL:
-			self.send_ts = time.time()
+		ts = time.time()
+		if (ts - self.send_ts) > SEND_INTERVAL:
+			self.send_ts = ts
+
+			# Use water temperature as room temperature if timeout
+			if (ts-self.roomtemp_timestamp) > TEMP_TIMEOUT:
+				self.req_roomtemp = self.watertemp
+				
 			self.send_request(
 				self.req_opmode_and_en & ENABLED_bm,
 				self.req_opmode_and_en & OPMODE_bm,
@@ -167,9 +160,22 @@ class anslut:
 	
 	def set_roomtemp(self, temp):
 		self.req_roomtemp = temp
+		self.roomtemp_timestamp = time.time()
 
 	def set_setpoint(self, temp):
 		self.req_setpoint = temp
 
-	def use_watertemp_as_roomtemp(self, state):
-		self.watertemp_as_roomtemp = state
+	# Text command
+	def parse_cmd(self, s):
+		try:
+			[cmd, value] = s.split('=')
+			if (cmd == "opmode"):
+				self.set_opmode(value)
+			elif (cmd == "roomtemp"):
+				self.set_roomtemp(int(value))
+			elif (cmd == "setpoint"):
+				self.set_setpoint(int(value))
+			elif (cmd == "watertemp_target"):
+				self.use_watertemp_as_roomtemp(int(value))
+		except ValueError:
+			print "Wrong number of arguments"
